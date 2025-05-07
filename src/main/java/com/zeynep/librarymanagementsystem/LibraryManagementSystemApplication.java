@@ -3,11 +3,11 @@ package com.zeynep.librarymanagementsystem;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-public class LibrarymanagementsystemApplication {
+@SpringBootApplication(scanBasePackages = "com.zeynep.librarymanagementsystem")
+public class LibraryManagementSystemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(LibrarymanagementsystemApplication.class, args);
+		SpringApplication.run(LibraryManagementSystemApplication.class, args);
 	}
 
 }
