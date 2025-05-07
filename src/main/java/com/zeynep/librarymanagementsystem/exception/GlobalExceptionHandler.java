@@ -33,8 +33,29 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<String> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<String> handleBookNotFound(BookNotFoundException ex) {
+        // Return a 404 Not Found response with the exception message
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BookNotAvailableException.class)
+    public ResponseEntity<String> handleBookNotAvailable(BookNotAvailableException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ActiveBorrowRecordNotFoundException.class)
+    public ResponseEntity<String> handleActiveBorrowNotFound(ActiveBorrowRecordNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex) {
         // Return a 404 Not Found response with the exception message
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }

@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Schema(description = "Data Transfer Object representing a borrow record")
 public class BorrowRecordDTO {
 
-    @Schema(description = "Unique identifier of the borrow record", example = "1001")
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @Schema(description = "ID of the user who borrowed the book", example = "5")

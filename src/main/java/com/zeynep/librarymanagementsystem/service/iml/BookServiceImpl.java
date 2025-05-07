@@ -62,9 +62,6 @@ public class BookServiceImpl implements BookService {
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
 
-        if (bookRepository.existsByIsbn(updatedBookDTO.getIsbn())) {
-            throw new ISBNAlreadyExistsException("A book with the ISBN " + updatedBookDTO.getIsbn() + " already exists.");
-        }
 
         // Update fields
         existingBook.setTitle(updatedBookDTO.getTitle());

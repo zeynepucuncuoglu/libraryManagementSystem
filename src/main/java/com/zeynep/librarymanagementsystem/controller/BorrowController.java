@@ -4,10 +4,13 @@ import com.zeynep.librarymanagementsystem.dto.BorrowRecordDTO;
 import com.zeynep.librarymanagementsystem.service.BorrowService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +30,12 @@ public class BorrowController {
             summary = "Borrow a book",
             description = "Allows a user to borrow a book by providing the user ID and book ID"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Book successfully borrowed"),
+            @ApiResponse(responseCode = "404", description = "User or Book not found"),
+            @ApiResponse(responseCode = "400", description = "Book is not available for borrowing"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
     @PostMapping("/{userId}/{bookId}")
     public ResponseEntity<BorrowRecordDTO> borrowBook(
             @Parameter(description = "ID of the user borrowing the book") @PathVariable Long userId,
@@ -40,6 +49,12 @@ public class BorrowController {
             summary = "Return a borrowed book",
             description = "Allows a user to return a previously borrowed book"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Book successfully returned"),
+            @ApiResponse(responseCode = "404", description = "User or Book not found"),
+            @ApiResponse(responseCode = "400", description = "Book was not borrowed or already returned"),
+            @ApiResponse(responseCode = "401", description = "Authentication required - Missing or invalid credentials")
+    })
     @PostMapping("/return/{userId}/{bookId}")
     public ResponseEntity<BorrowRecordDTO> returnBook(
             @Parameter(description = "ID of the user returning the book") @PathVariable Long userId,
@@ -53,6 +68,11 @@ public class BorrowController {
             summary = "Get borrow history of a user",
             description = "Retrieves all borrow records associated with a specific user"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Borrow history retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "401", description = "Authentication required - Missing or invalid credentials")
+    })
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<BorrowRecordDTO>> getUserBorrowHistory(
             @Parameter(description = "ID of the user") @PathVariable Long userId
@@ -65,6 +85,10 @@ public class BorrowController {
             summary = "Get all borrow records",
             description = "Retrieves the complete borrow history. Typically used by admins."
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All borrow records retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Authentication required - Missing or invalid credentials")
+    })
     @GetMapping("/history")
     public ResponseEntity<List<BorrowRecordDTO>> getAllBorrowHistory() {
         List<BorrowRecordDTO> borrowHistory = borrowService.getAllBorrowHistory();
@@ -75,6 +99,12 @@ public class BorrowController {
             summary = "Get overdue borrowed books",
             description = "Retrieves a list of all overdue borrow records"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Overdue books retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied - only librarians allowed"),
+            @ApiResponse(responseCode = "401", description = "Authentication required - Missing or invalid credentials")
+    })
+    @PreAuthorize("hasRole('LIBRARIAN')")
     @GetMapping("/overdue")
     public ResponseEntity<List<BorrowRecordDTO>> getOverdueBooks() {
         List<BorrowRecordDTO> overdueBooks = borrowService.getOverdueBooks();
