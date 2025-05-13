@@ -56,46 +56,39 @@ bash```
 
 
 
-. **Configure Application Properties**
+## ⚙️ application.properties Configuration
 
-Update your  `application.properties` with your local PostgreSQL credentials:
+The `application.properties` file contains configuration settings for the application. Below is an example of the `application.properties` configuration used in this project.
 
-# ===============================
-# = Database Configuration      =
-# ===============================
-spring.datasource.url=jdbc:postgresql://localhost:5432/librarydb
-spring.datasource.username=your_db_username
-spring.datasource.password=your_db_password
+### 📂 Database Configuration
+
+```properties
+# PostgreSQL Database Configuration
+spring.datasource.url=jdbc:postgresql://localhost:5432/library_db
+spring.datasource.username=your_database_username
+spring.datasource.password=your_database_password
 spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
-# ===============================
-# = JPA / Hibernate              =
-# ===============================
+# Hibernate DDL mode
 spring.jpa.hibernate.ddl-auto=update
+
+# Show SQL queries in logs
 spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
-# ===============================
-# = Server Port (Optional)      =
-# ===============================
-server.port=8080
+# SQL logging format
+spring.jpa.properties.hibernate.format_sql=true
 
-# ===============================
-# = JWT Configuration           =
-# ===============================
-jwt.secret=your_jwt_secret_key
+# Database connection pool
+spring.datasource.hikari.maximum-pool-size=10
 
-# ===============================
-# = Swagger (Springdoc)         =
-# ===============================
-springdoc.api-docs.path=/v3/api-docs
-springdoc.swagger-ui.path=/swagger-ui.html
-
+```
 3. **Run the Application**
 
    #### ▶️ Option A: Run with Maven
 
 If you're using the Maven wrapper (recommended):
+
 
 ```bash
 ./mvnw spring-boot:run
@@ -116,7 +109,6 @@ This project includes interactive API documentation powered by **Swagger (Spring
 
 After running the application locally, open the link in your browser to explore and test all available endpoints.
 
-> ✅ Swagger documentation is auto-generated from your Spring Boot REST controllers and annotations.
 
 ---
 
