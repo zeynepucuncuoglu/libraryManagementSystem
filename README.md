@@ -56,11 +56,11 @@ Key features include:
 
 
 
-## ⚙️ application.properties Configuration
+2. **Application.properties Configuration**
 
 The `application.properties` file contains configuration settings for the application. Below is an example of the `application.properties` configuration used in this project.
 
-### 📂 Database Configuration
+
 
 ```properties
 
@@ -89,7 +89,7 @@ jwt.secret=your_secret_key
 
 3. **Run the Application**
 
-   #### ▶️ Option A: Run with Maven
+▶️ Option A: Run with Maven
 
 If you're using the Maven wrapper (recommended):
 
@@ -97,7 +97,7 @@ If you're using the Maven wrapper (recommended):
 ```bash
 ./mvnw spring-boot:run
 ```
- #### ▶️ Option B: if you have Maven installed globally
+▶️ Option B: if you have Maven installed globally
 
 ```bash
 mvn spring-boot:run
@@ -155,7 +155,8 @@ All API endpoints are accessible through the base URL:
       "author": "Author Name",
       "isbn": "1234567890123",
       "publicationDate": "2023-05-13",
-      "genre": "Fiction"
+      "genre": "Fiction",
+      "available": true
     }
     ```
 
@@ -197,6 +198,7 @@ All API endpoints are accessible through the base URL:
       "isbn": "1234567890123",
       "publicationDate": "2023-05-13",
       "genre": "Fantasy"
+      "available": true
     }
     ```
 
@@ -220,10 +222,11 @@ All API endpoints are accessible through the base URL:
 - **Request Body:**
     ```json
     {
-      "name": "John Doe",
-      "email": "john@example.com",
-      "role": "patron",
-      "password": "securepassword123"
+      "name": "user",
+     "email": "user@example.com",
+     "role": "PATRON",
+     "contactInfo": "+1-234-567-8901",
+     "password": "securePassword123"
     }
     ```
 
@@ -245,8 +248,12 @@ All API endpoints are accessible through the base URL:
 - **Request Body:**
     ```json
     {
-      "name": "John Updated",
-      "email": "john_updated@example.com"
+      "id": 3036,
+       "name": "example Updated",
+       "email": "patronex@example.com",
+       "password": "securePassword123",
+       "role": "PATRON",
+       "contactInfo": "+1-234-567-8901"
     }
     ```
 
@@ -269,28 +276,30 @@ All API endpoints are accessible through the base URL:
 - **Description:** Borrow a book from the library.
 - **Path Parameter:**
     - `bookId`: The ID of the book being borrowed.
-- **Request Body:**
-    ```json
-    {
-      "dueDate": "2023-06-13"
-    }
-    ```
+
 
 #### 🔄 Return a Book
 
 - **Method:** `POST`
 - **Endpoint:** `/return/{bookId}`
-- **Description:** Return a borrowed book to the library (patrons only).
+- **Description:** Return a borrowed book to the library .
 - **Path Parameter:**
     - `bookId`: The ID of the book being returned.
 
-#### 📜 View Borrowing History
+#### 📜 View All Borrowing History
 
 - **Method:** `GET`
 - **Endpoint:** `/borrow/history`
-- **Description:** View borrowing history for the authenticated user.
-- **Query Parameters:**
-    - `userId`: (optional) The ID of the user (librarians can query others' histories).
+- **Description:** View borrowing history (librarians only).
+
+#### 📜 View User Borrowing History
+
+- **Method:** `GET`
+- **Endpoint:** `/borrow/history/user/{userId}`
+- **Description:** View borrowing history of a user.
+- - **Path Parameter:**
+    - `userId`: The ID of the user being showed borrow history.
+
 
 #### 📅 Manage Overdue Books
 
