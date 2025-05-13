@@ -52,7 +52,7 @@ Key features include:
    ```bash
    git clone https://github.com/zeynepucuncuoglu/libraryManagementSystem.git
    cd library-management-system
-bash```
+
 
 
 
@@ -116,13 +116,13 @@ After running the application locally, open the link in your browser to explore 
 
 A complete Postman collection is provided to simplify testing.
 
-- **File:** `postman/library-management-collection.json`
+- **File:** `postman/LibraryManagementSystem.postman_collection.json`
 
 #### 🚀 How to Import into Postman
 
 1. Open [Postman](https://www.postman.com/)
 2. Click **Import**
-3. Select the file `postman/library-management-collection.json` from the project folder
+3. Select the file `LibraryManagementSystem.postman_collection.json` from the project folder
 4. Use the pre-configured requests to test all available endpoints
 
 > 🛡️ For secured endpoints, update the JWT token in the `Authorization` header (`Bearer <your_token>`).
@@ -133,7 +133,7 @@ The API offers a set of endpoints for managing books, users, borrowing/returning
 
 ### 🏠 Base URL
 All API endpoints are accessible through the base URL:  
-`http://localhost:8080/api/v1`
+`http://localhost:8080/api/`
 
 ---
 
@@ -262,7 +262,7 @@ All API endpoints are accessible through the base URL:
 
 - **Method:** `POST`
 - **Endpoint:** `/borrow/{bookId}`
-- **Description:** Borrow a book from the library (patrons only).
+- **Description:** Borrow a book from the library.
 - **Path Parameter:**
     - `bookId`: The ID of the book being borrowed.
 - **Request Body:**
