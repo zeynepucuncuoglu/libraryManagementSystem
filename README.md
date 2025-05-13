@@ -63,6 +63,11 @@ The `application.properties` file contains configuration settings for the applic
 ### 📂 Database Configuration
 
 ```properties
+
+spring.application.name=librarymanagementsystem
+
+#Port Selection
+server.port=8080
 # PostgreSQL Database Configuration
 spring.datasource.url=jdbc:postgresql://localhost:5432/library_db
 spring.datasource.username=your_database_username
@@ -70,19 +75,18 @@ spring.datasource.password=your_database_password
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
-# Hibernate DDL mode
+# Hibernate DDL mod
 spring.jpa.hibernate.ddl-auto=update
 
-# Show SQL queries in logs
-spring.jpa.show-sql=true
+#Swagger
+springdoc.api-docs.path=/v3/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
 
-# SQL logging format
-spring.jpa.properties.hibernate.format_sql=true
-
-# Database connection pool
-spring.datasource.hikari.maximum-pool-size=10
+#JWT Secret
+jwt.secret=your_secret_key
 
 ```
+
 3. **Run the Application**
 
    #### ▶️ Option A: Run with Maven
