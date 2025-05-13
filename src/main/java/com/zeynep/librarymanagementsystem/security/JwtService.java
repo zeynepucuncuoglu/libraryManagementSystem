@@ -26,6 +26,9 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
     public String generateToken(UserDetails userDetails) {
+        if (userDetails == null || userDetails.getUsername() == null) {
+            return null; // or throw an exception
+        }
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())

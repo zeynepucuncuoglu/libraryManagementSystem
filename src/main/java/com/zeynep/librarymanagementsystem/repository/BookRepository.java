@@ -13,9 +13,6 @@ import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
     boolean existsByIsbn(String isbn);
-    List<Book> findByTitleContainingIgnoreCase(String title);
-    List<Book> findByAuthorContainingIgnoreCase(String author);
-    List<Book> findByGenreContainingIgnoreCase(String genre);
 
 
     @Query("""
@@ -27,5 +24,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     """)
     Page<Book> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    List<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author);
+
 }

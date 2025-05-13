@@ -13,6 +13,8 @@ import com.zeynep.librarymanagementsystem.repository.BookRepository;
 import com.zeynep.librarymanagementsystem.repository.BorrowRecordRepository;
 import com.zeynep.librarymanagementsystem.repository.UserRepository;
 import com.zeynep.librarymanagementsystem.service.BorrowService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ import java.util.List;
 
 @Service
 public class BorrowServiceImpl implements BorrowService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BorrowServiceImpl.class);
+
 
     private final BorrowRecordRepository borrowRecordRepository;
     private final BookRepository bookRepository;
@@ -40,16 +45,24 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Override
     public BorrowRecordDTO borrowBook(Long userId, Long bookId) {
+        logger.info("Attempting to borrow book with ID {} for user with ID {}", bookId, userId);
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    logger.warn("User with ID {} not found", userId);
+                    return new UserNotFoundException("User not found");
+                });
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Book with ID {} not found", bookId);
+                    return new BookNotFoundException("Book not found");
+                });
 
         if (!book.isAvailable()) {
+            logger.warn("Book with ID {} is not available for borrowing", bookId);
             throw new BookNotAvailableException("Book is not available for borrowing");
         }
-
 
         BorrowRecord borrowRecord = BorrowRecord.builder()
                 .user(user)
@@ -60,13 +73,21 @@ public class BorrowServiceImpl implements BorrowService {
 
         book.setAvailable(false);
         bookRepository.save(book);
-        return borrowRecordMapper.toDTO(borrowRecordRepository.save(borrowRecord));
+        BorrowRecord savedRecord = borrowRecordRepository.save(borrowRecord);
+
+        logger.info("Book with ID {} successfully borrowed by user with ID {}", bookId, userId);
+        return borrowRecordMapper.toDTO(savedRecord);
     }
 
     @Override
     public BorrowRecordDTO returnBook(Long userId, Long bookId) {
+        logger.info("Attempting to return book with ID {} for user with ID {}", bookId, userId);
+
         BorrowRecord borrowRecord = borrowRecordRepository.findByUserIdAndBookIdAndReturnDateIsNull(userId, bookId)
-                .orElseThrow(() -> new ActiveBorrowRecordNotFoundException("No active borrow record found for this user and book"));
+                .orElseThrow(() -> {
+                    logger.warn("No active borrow record found for user ID {} and book ID {}", userId, bookId);
+                    return new ActiveBorrowRecordNotFoundException("No active borrow record found for this user and book");
+                });
 
         borrowRecord.setReturnDate(LocalDate.now());
 
@@ -74,11 +95,14 @@ public class BorrowServiceImpl implements BorrowService {
         book.setAvailable(true);
         bookRepository.save(book);
 
-        return borrowRecordMapper.toDTO(borrowRecordRepository.save(borrowRecord));
+        BorrowRecord savedRecord = borrowRecordRepository.save(borrowRecord);
+        logger.info("Book with ID {} successfully returned by user with ID {}", bookId, userId);
+        return borrowRecordMapper.toDTO(savedRecord);
     }
 
     @Override
     public List<BorrowRecordDTO> getUserBorrowHistory(Long userId) {
+        logger.info("Fetching borrow history for user with ID {}", userId);
         return borrowRecordRepository.findByUserId(userId).stream()
                 .map(borrowRecordMapper::toDTO)
                 .toList();
@@ -86,6 +110,7 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Override
     public List<BorrowRecordDTO> getAllBorrowHistory() {
+        logger.info("Fetching complete borrow history");
         return borrowRecordRepository.findAll().stream()
                 .map(borrowRecordMapper::toDTO)
                 .toList();
@@ -93,6 +118,7 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Override
     public List<BorrowRecordDTO> getOverdueBooks() {
+        logger.info("Fetching overdue books");
         return borrowRecordRepository.findByDueDateBeforeAndReturnDateIsNull(LocalDate.now()).stream()
                 .map(borrowRecordMapper::toDTO)
                 .toList();

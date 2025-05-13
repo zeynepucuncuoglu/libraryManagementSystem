@@ -12,6 +12,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +27,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 @Tag(name = "User Controller", description = "Operations related to user management")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final UserMapper userMapper;
@@ -52,7 +56,13 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserById(
             @Parameter(description = "ID of the user to fetch") @PathVariable Long id
     ) {
+        logger.info("Fetching user with ID {}", id);
         UserDTO userDTO = userService.getUserById(id);
+        if (userDTO != null) {
+            logger.info("User with ID {} found", id);
+        } else {
+            logger.warn("User with ID {} not found", id);
+        }
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
@@ -71,7 +81,9 @@ public class UserController {
     @PreAuthorize("hasRole('LIBRARIAN')")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
+        logger.info("Retrieving all users");
         List<UserDTO> users = userService.getAllUsers();
+        logger.info("Successfully retrieved {} users", users.size());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -92,9 +104,11 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
             @Parameter(description = "ID of the user to update") @PathVariable Long id,
-            @Parameter(description = "Updated user details") @RequestBody UserDTO userDTO
+            @Parameter(description = "Updated user details") @Valid @RequestBody UserDTO userDTO
     ) {
+        logger.info("Updating user with ID {}", id);
         UserDTO updatedUserDTO = userService.updateUser(id, userDTO);
+        logger.info("User with ID {} successfully updated", id);
         return new ResponseEntity<>(updatedUserDTO, HttpStatus.OK);
     }
 
@@ -114,7 +128,9 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(
             @Parameter(description = "ID of the user to delete") @PathVariable Long id
     ) {
+        logger.info("Attempting to delete user with ID {}", id);
         userService.deleteUser(id);
+        logger.info("User with ID {} deleted successfully", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

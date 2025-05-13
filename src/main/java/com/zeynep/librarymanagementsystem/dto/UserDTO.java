@@ -1,5 +1,7 @@
 package com.zeynep.librarymanagementsystem.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zeynep.librarymanagementsystem.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -36,6 +38,7 @@ public class UserDTO {
     private String contactInfo;
 
     @NotBlank(message = "Password must not be empty")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
     @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).*$",

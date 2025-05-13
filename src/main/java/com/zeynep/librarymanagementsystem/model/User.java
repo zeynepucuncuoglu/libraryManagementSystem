@@ -1,5 +1,6 @@
 package com.zeynep.librarymanagementsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -35,7 +36,6 @@ public class User {
     @Column(nullable = false)
     private Role role; // e.g., "LIBRARIAN" or "PATRON"
 
-    @NotBlank
     private String contactInfo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

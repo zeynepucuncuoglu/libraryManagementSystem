@@ -4,6 +4,7 @@ import com.zeynep.librarymanagementsystem.dto.UserDTO;
 import com.zeynep.librarymanagementsystem.model.User;
 import org.mapstruct.Mapper;
 
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 

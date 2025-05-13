@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
     private final BookService bookService;
     private final BookMapper bookMapper;
@@ -46,8 +50,15 @@ public class BookController {
     @PreAuthorize("hasRole('LIBRARIAN')")
     @PostMapping
     public ResponseEntity<BookDTO> addBook(@Valid @RequestBody BookDTO bookDTO) {
-        BookDTO savedBook = bookService.addBook(bookDTO);
-        return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
+        logger.info("Request to add a new book: {}", bookDTO);
+        try {
+            BookDTO savedBook = bookService.addBook(bookDTO);
+            logger.info("Book added successfully: {}", savedBook);
+            return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
+        } catch (Exception e) {
+            logger.error("Error adding book: {}", e.getMessage());
+            throw e; // Rethrow or handle the exception accordingly
+        }
     }
 
     @Operation(summary = "Get a book by ID", description = "Retrieve details of a specific book based on its unique ID")
@@ -61,8 +72,19 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<BookDTO> getBookById(
             @Parameter(description = "ID of the book to retrieve") @PathVariable Long id) {
-        BookDTO bookDTO = bookService.getBookById(id);
-        return new ResponseEntity<>(bookDTO, HttpStatus.OK);
+        logger.info("Request to retrieve book with ID: {}", id);
+        try {
+            BookDTO bookDTO = bookService.getBookById(id);
+            if (bookDTO == null) {
+                logger.warn("Book with ID {} not found", id);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            logger.info("Book found: {}", bookDTO);
+            return new ResponseEntity<>(bookDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error retrieving book: {}", e.getMessage());
+            throw e;
+        }
     }
 
     @Operation(summary = "Get all books", description = "Retrieve a list of all books in the library")
@@ -75,8 +97,15 @@ public class BookController {
     })
     @GetMapping
     public ResponseEntity<List<BookDTO>> getAllBooks() {
-        List<BookDTO> books = bookService.getAllBooks();
-        return new ResponseEntity<>(books, HttpStatus.OK);
+        logger.info("Request to retrieve all books");
+        try {
+            List<BookDTO> books = bookService.getAllBooks();
+            logger.info("Successfully retrieved {} books", books.size());
+            return new ResponseEntity<>(books, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error retrieving books: {}", e.getMessage());
+            throw e;
+        }
     }
 
 
@@ -95,8 +124,15 @@ public class BookController {
     public ResponseEntity<BookDTO> updateBook(
             @Parameter(description = "ID of the book to update") @PathVariable Long id,
             @RequestBody BookDTO bookDTO) {
-        BookDTO updatedBook = bookService.updateBook(id, bookDTO);
-        return new ResponseEntity<>(updatedBook, HttpStatus.OK);
+        logger.info("Request to update book with ID: {}", id);
+        try {
+            BookDTO updatedBook = bookService.updateBook(id, bookDTO);
+            logger.info("Book updated successfully: {}", updatedBook);
+            return new ResponseEntity<>(updatedBook, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error updating book: {}", e.getMessage());
+            throw e;
+        }
     }
     @Operation(
             summary = "Search books",
@@ -119,9 +155,15 @@ public class BookController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<BookDTO> results = bookService.searchBooks(keyword, page, size);
+        logger.info("Request to search books with keyword: {}, page: {}, size: {}", keyword, page, size);
+        try {
+            Page<BookDTO> results = bookService.searchBooks(keyword, page, size);
 
-        return ResponseEntity.ok(results);
+            return ResponseEntity.ok(results);
+        } catch (Exception e) {
+            logger.error("Error searching books: {}", e.getMessage());
+            throw e;
+        }
     }
 
     @Operation(summary = "Delete a book", description = "Remove a book from the library by ID")
@@ -136,8 +178,15 @@ public class BookController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(
             @Parameter(description = "ID of the book to delete") @PathVariable Long id) {
-        bookService.deleteBook(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        logger.info("Request to delete book with ID: {}", id);
+        try {
+            bookService.deleteBook(id);
+            logger.info("Book with ID {} deleted successfully", id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            logger.error("Error deleting book: {}", e.getMessage());
+            throw e;
+        }
     }
 
 }
